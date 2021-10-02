@@ -1,32 +1,32 @@
-const itemsTodo = [
-    {
-        id: 1,
-        message: 'conteudo do item1'
-    },
-    {
-        id: 2,
-        message: 'conteudo do item2'
-    },
-    {
-        id: 3,
-        message: 'conteudo do item3'
-    },
-    {
-        id: 4,
-        message: 'conteudo do item4'
-    },
-    {
-        id: 5,
-        message: 'conteudo do item5'
-    },
-]
+const functionalities = {
+    all: [
+        {
+            message: 'conteudo do item1'
+        },
+        {
+            message: 'conteudo do item2'
+        },
+        {
+            message: 'conteudo do item3'
+        },
+        {
+            message: 'conteudo do item4'
+        },
+        {
+            message: 'conteudo do item5'
+        },
+    ],
 
-// const addItem = {
-//     add(item) {
-//         itemsTodo.push(item)
-//         App.reload()
-//     }
-// }
+    add(item) {
+        functionalities.all.push(item)
+        App.reload()
+    },
+
+    remove(index) {
+        functionalities.all.splice(index, 1)
+        App.reload()
+    }
+}
 
 const DOM = {
     listItem: document.querySelector('#list-todo'),
@@ -50,9 +50,48 @@ const DOM = {
     }
 }
 
+const Form = {
+    description: document.querySelector('input#description'),
+
+    getValues() {
+        return {
+            description: Form.description.value
+        }    
+    },
+
+    validateFilds() {
+        const { description } = Form.getValues()
+
+        if (description.trim() === "") {
+            throw new Error('Por favor, preencha o campo')
+        }
+    },
+    
+    submit(event) {
+        event.preventDefault()
+
+        try {
+            //verificar se os campos estão preenchidos
+            Form.validateFilds()
+            let item = Form.getValues().description
+            //salvar
+            functionalities.add({
+                message: item
+            })
+            //apagar os dados do formulario
+            Form.description.value = ""
+            //atualizar
+            App.reload()
+
+        } catch (error) {
+            alert(error.message)
+        }
+    }
+}
+
 const App = {
     init() {
-        itemsTodo.forEach((item) => {
+        functionalities.all.forEach((item) => {
             DOM.addItemHTML(item)
         })
     },
@@ -65,7 +104,3 @@ const App = {
 
 App.init()
 
-addItem.add({
-    id: 6,
-    message: "conteudo do item6"
-})
