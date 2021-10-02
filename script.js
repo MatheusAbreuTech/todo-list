@@ -1,21 +1,15 @@
+const Storage = {
+    get() {
+        return JSON.parse(localStorage.getItem("todoList")) || []
+    },
+
+    set(items) {
+        localStorage.setItem("todoList", JSON.stringify(items))
+    }
+}
+
 const functionalities = {
-    all: [
-        {
-            message: 'conteudo do item1'
-        },
-        {
-            message: 'conteudo do item2'
-        },
-        {
-            message: 'conteudo do item3'
-        },
-        {
-            message: 'conteudo do item4'
-        },
-        {
-            message: 'conteudo do item5'
-        },
-    ],
+    all: Storage.get(),
 
     add(item) {
         functionalities.all.push(item)
@@ -31,19 +25,19 @@ const functionalities = {
 const DOM = {
     listItem: document.querySelector('#list-todo'),
 
-    addItemHTML(item) {
+    addItemHTML(item, index) {
         const li = document.createElement('li')
 
-        li.innerHTML = DOM.itemsInnerHTML(item)
-
+        li.innerHTML = DOM.itemsInnerHTML(item, index)
+        li.dataset.index = index
         DOM.listItem.appendChild(li)
     },
     
-    itemsInnerHTML(item) {
+    itemsInnerHTML(item, index) {
         const html = `
         <div class="box-item">
             <h3>${item.message}</h3>
-            <button>Excluir</button>
+            <button onclick="functionalities.remove(${index})">Excluir</button>
         </div>
         `
         return html
@@ -73,6 +67,7 @@ const Form = {
         try {
             //verificar se os campos estão preenchidos
             Form.validateFilds()
+            //Pegando os dados inseridos
             let item = Form.getValues().description
             //salvar
             functionalities.add({
@@ -80,8 +75,6 @@ const Form = {
             })
             //apagar os dados do formulario
             Form.description.value = ""
-            //atualizar
-            App.reload()
 
         } catch (error) {
             alert(error.message)
@@ -91,9 +84,11 @@ const Form = {
 
 const App = {
     init() {
-        functionalities.all.forEach((item) => {
-            DOM.addItemHTML(item)
+        functionalities.all.forEach((item, index) => {
+            DOM.addItemHTML(item, index)
         })
+
+        Storage.set(functionalities.all)
     },
 
     reload() {
@@ -103,4 +98,3 @@ const App = {
 }
 
 App.init()
-
